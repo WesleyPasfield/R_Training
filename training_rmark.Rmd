@@ -4,6 +4,7 @@ author: "Wesley Pasfield"
 date: "May 15, 2016"
 output: html_document
 ---
+Code & Training file available at https://github.com/WesleyPasfield/R_Training
 
 #### What is R and why do I care?
 
