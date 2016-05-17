@@ -1,0 +1,214 @@
+---
+title: "Intro to R"
+author: "Wesley Pasfield"
+date: "May 15, 2016"
+output: html_document
+---
+
+#### What is R and why do I care?
+
+R is an open-source programming language that enables data manipulation, statistical computing & data visualization. R has a huge active & collaborative userbase, and has a ton of packages available that make tasks impossible to do with traditional tools extremely simple.
+
+---
+
+#### Why R vs. Python? SQL? Excel? Tableau? SAS? etc...
+
+It really isn't R "vs." these other languages, as each has its own strengths & weaknesses, but in general R was a language designed for statistical programming, so is the gold standard in that regard. But here are the differences: 
+
+
+**Python**: Python is a better general purpose language, but R is catching up in that regard (just like Python is catching up to R in terms of stats). Python has a huge community (like R), and is an extremely valuable language to learn given it's flexibility, I highly encourage learning Python as well as R - learning one will make learning the other much easier. If you're looking to learn a more general programming language, Python is the better bet, if you're looking to learn a stats programming language R is the best. While some implementations make it easier (Anaconda), it is also way easier to set up R than Python
+
+
+**SAS/SPSS**: R iterates significantly faster than proprietary software (SAS/SPSS etc..) since it is Open Source. In my opinion these languages will only survive in academia & old companies - try to find a startup or newer company that uses SAS or SPSS
+
+
+**Excel**: Excel is great for some things like visually displaying small amount of data, but horrendous for other things (especially on Macs). Certain tasks that take hours in Excel would take seconds in R. 
+
+
+**Tableau**: Tableau is a great visualization product, but I personally find it very difficult to manipulate data within Tableau. R (& Python) offer much more flexibility in visualization, but also require a more hands on approach (less drag and drop). In my opinion, in about ~5 years Tableau will find itself in the same boat as SAS/SPSS due to open source visualization growth, notably from notebook technologies
+
+---
+
+#### Installing R & R Studio
+
+R Installation on Mac: https://cran.r-project.org/bin/macosx/
+
+R Installation on Windows: https://cran.r-project.org/bin/windows/base/
+
+R Studio Installation: https://www.rstudio.com/products/rstudio/download/
+
+
+**What is RStudio, anyway?**
+
+
+RStudio is an IDE that makes programming in R significantly easier. You can easily look at results, check out data you've loaded in, and visualize information.
+
+---
+
+#### Loading data into R
+
+To start working with R, you have to load data into R, or create data in R yourself - You rarely create your own data in a practical setting, so I will focus on bringing data in. There are many ways to do this but the most common is read.table, or its child function read.csv. These functions allow us to load in text or csv files into R. Prior to doing this you need to set your working directory - this is simply where R will look for the files your referencing, so the file must be in that folder. In the below example, I am setting my working directory to the location of a test file I've created, and then loading in that file and assigning to to "rTraining" - this means when I reference rTraining within R, I'm referencing this data.
+
+---
+
+```{r}
+setwd('~/Documents/R Training')
+rTraining <- read.csv('training.csv', stringsAsFactors = F)
+head(rTraining)
+```
+
+This also brings us to another key aspect of R - **assignment**. The <- operator represents assignment, as does the single equals sign (=). It is generally best practice to use <- as = can get confusing since == means something else (is x equal to y). In this case I'm assigning rTraining to represent the contents of the file 'training.csv'
+
+---
+
+#### R Data Types
+
+There are numerous different types of data in R, and the type dictates how you can treat them.
+
+**Numeric/Double** Pretty simple - these are numbers that can include decimals
+
+**Integer** These are whole numbers
+
+**Date** There are actually numerous types of dates you can store in R, including timestamps (hours, seconds, minutes). We do not need to get into all of them today, but all Date data is treated differently than other types
+
+**Logical** True/False variables
+
+**Character** Text or mixed text & numeric values - can basically be anything, but difficult to do anything with them, when a variable is in character format it is converted to string even if it is a numeric value
+
+**Factor** Can be any type of data - but turns it into a categorical variable. This makes using some of the built in functionality within R very convenient, but can cause issues elsewhere
+
+Below shows which class each variable is with our data, as well as a summary of the last two variables - note summary is a built in function within R, we'll get into that later.
+
+```{r}
+sapply(rTraining, class)
+summary(rTraining$Var5)
+summary(rTraining$Var6)
+```
+
+---
+
+Now let's look what happens when we convert Var5 into a factor & Var6 into a date
+
+```{r} 
+rTraining$Var5 <- as.factor(rTraining$Var5)
+rTraining$Var6 <- as.Date(rTraining$Var6, format = '%m/%d/%y')
+summary(rTraining$Var5)
+summary(rTraining$Var6)
+```
+
+Notice the as.factor & as.Date functions - there's one for each of the data types, you can't call them for everything (for example, you'll get an error if you try to turn text into a numeric field), but it's easy to change a variable's data type in general.
+
+---
+
+#### Data Structures in R
+
+Before getting too far ahead of ourselves, let's take a step back and talk about data structures in R. We're currently working with a **data frame**, which is really the backbone of statistical analysis in R. As seen - it can handle multiple data types, and it is the data type required as we get into more advanced functionality like modeling.
+```{r}
+class(rTraining)
+```
+Other data structures include:
+
+**Vectors** There actually are no scalars in R, only one variable vectors. Vectors can be viewed as just one column of a particular variable. Both of the below are vectors - vector1 is a numeric vector, vector2 is a character vector
+```{r}
+vector1 <- c(1,2,3,4,5)
+vector1
+class(vector1)
+vector2 <- c('a','b','c','d','e')
+vector2
+class(vector2)
+```
+
+**Matrices** A matrix is a collection of data elements arranged in a two dimensional fashion. Matrix must be all of the same type - so all numeric, all character etc... Matrices are more computationally efficient than data frames so are useful in some cases, but data frames are a superior data structure to matrices in most cases because they are more flexible.
+```{r}
+matrix1 <- matrix(c(vector1, vector2), 
+                     nrow = 5,
+                     ncol = 2)
+matrix1
+class(matrix1)
+```
+
+Notice the numbers are all now in quotes - since vector1 & vector2 are different data types, R converts the numeric vector into a character vector because it cannot do the opposite and a matrix must contain the same data types.
+
+**Lists** are another data type that can store basically anything including different data types, and are extremely useful for passing values functions or returning values in some sort of loop. 
+
+**Arrays** are any dimensional vectors - I do not run across these very often
+
+---
+
+#### Built - In Functions
+
+Now that we know we are working with a data frame, there are certain built in functions that we can apply to learn more about our data. We've already used summary, when we wrote summary(rTraining$Var5) - let's talk about the $ operator. This allows us to reference a column within a data frame - the data frame is rTraining and the column is var5. You can also reference a column using opening and closing brackets - summary(rTraining[,'Var5']). Notice the comma used between the brackets - the way to read that is I want to run the summary function on ALL rows for Var5. If I wrote this as summary(rTraining[1:30,'Var5')]) I'd run summary on just the first 30 rows of rTraining. summary(rTraining[1:30,6]) has the same effect, as var5 is the 6th variable in the data frame.
+
+In addition to summary() there are a ton of other functions - here are some other examples
+
+```{r}
+mean(rTraining$Var4) ## Mean of Var4
+sd(rTraining$Var4) ## Standard Deviation of Var4
+nrow(rTraining) ## Number of rows in rTraining
+length(rTraining) ## Number of columns in rTraining
+```
+
+---
+
+#### Installing Packages
+
+Packages are what makes R great - they are essentially functions that other people have created that a flexible and can be extended to many situations. They are also very easy to install (unlike other languages) using install.packages. Let's install a package called DescTools, and then call the Desc() function to analyze our date variable. You only need to run install.packages once for a given package - since I already have DescTools installed, I need to use library(DescTools) to load the package into my existing environment
+
+```{r}
+##install.packages(DescTools)
+library(DescTools)
+options(scipen=999) ## Prevents it from printing in scientific notation
+Desc(rTraining$Var6)
+```
+
+So with a few simple lines we can accomplish something that would have taken hours using some other software! And we haven't even gotten into data manipulation, visualization or modeling at all! There are a seemingly limitless amount of packages in R to explore, this is just an example of one. Note this requires internet connection, as it is pulling information from the web.
+
+---
+
+#### Getting Data Out
+
+Now let's say we change something about our data and want to save that and use it elsewhere - saving to a new csv file is extremely easy. In this case, I want to save to the same working directory as I used previously, so I call that same directory prior to saving
+
+```{r}
+write.csv(rTraining, 'newTraining.csv', row.names = F)
+```
+
+Now in that same folder I have a new file called newTraining.csv. I didn't really do anything with the data, but obviously you would change it in other situations. You can also create connections with software like Tableau directly and avoid the saving to CSV aspect of the process.
+
+---
+
+#### What do I do when I can't figure something out?
+
+# *GOOGLE IT*
+
+There is an incredible wealth of information on how to solve problems in R on the web, I use stack overflow constantly to solve problems and improve the code I'm writing. It's generally pretty tough to think of a situation where the answer isn't out there somewhere on the interwebs (at least indirectly)
+
+In addition, typing ? before a function pulls up the CRAN documentation for that package - this can be enormously helpful when trying to first understand what a package can do.
+
+---
+
+#### What to do next
+
+If you don't have a dataset in mind that you'd like to use, there are built in data sets within R that you can call - as an example:
+
+```{r}
+data(mtcars)
+head(mtcars)
+```
+data(mtcars) loads in the built-in mtcars dataset, then the head() function displays the first 6 lines within the dataset - you can explore the data however you like from here.
+
+Now (using the ? function described above), if I want to pull in documentation about the mtcars dataset all I need to do is:
+
+```{r}
+?mtcars
+```
+
+This will pull up the documentation within the 'Help' pane of Rstudio (note you need internet connection to do this, as it's pulling the documentation from the internet)
+
+---
+
+#### Next Time ...
+
+This should be a good start into R - this is certainly skimming the surface, but it's enough to understand what R is capable of, and how it can speed up daily tasks.
+
+In later sessions we'll discuss more about data manipulation (which is where R really separates itself from other tools outside of Python), modeling & visualization.
